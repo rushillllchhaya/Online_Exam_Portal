@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace API.Models
 {
-    public class SubjectTableModel
+    public class SubjectModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,5 +18,20 @@ namespace API.Models
         public string? SubjectName { get; set; }
 
         public int ProfessorID { get; set; }
+
+
+        //navigation
+        [ForeignKey("ProfessorID")]
+        public ProfessorModel? SubjectProfessor { get; set; }
+
+        public List<ExamModel>? Exams { get; set; }
+    }
+
+
+    public class Subjectprofessor
+    {
+        public int ProfessorID { get; set; }
+
+        public int SubjectID { get; set; }
     }
 }

@@ -25,14 +25,12 @@ namespace API.Models
 
         public string? Designation { get; set; }
 
-        public int SubjectID { get; set; }
+        // Navigation property for one-to-many relationship
+        public List<SubjectModel>? Subjects { get; set; }
 
-        //navigation
         [ForeignKey("UserID")]
-        public UsersModel User { get; set; }
-
-        public List<ExamsModel> professorexam { get; set; }
-
+        public required UsersModel User { get; set; }
     }
+
 
 }

@@ -21,6 +21,12 @@ namespace API.Models
 
         //navogation
         [ForeignKey("ExamID")]
-        public ExamsModel questionexam { get; set; }
+        public ExamModel? Questionexam { get; set; }
+    }
+
+    public class ExamQuestion
+    {
+        public int ExamID { get; set; }
+        public int QuestionID { get; set; }
     }
 }

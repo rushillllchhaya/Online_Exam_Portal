@@ -21,7 +21,8 @@ namespace API.Models
 
         //navigation
         [ForeignKey("UserID")]
-        public UsersModel User { get; set; }
+        public required UsersModel User { get; set; }
+        public List<SubjectModel>? Studentsubject { get; set; }
     }
 
 }

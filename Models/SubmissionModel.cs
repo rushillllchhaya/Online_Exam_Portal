@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace API.Models
 {
-    public class SubmissionTableModel
+    public class SubmissionModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,13 +22,12 @@ namespace API.Models
 
         //navigation
         [ForeignKey("UserID")]
-        public UsersModel User { get; set; }
+        public required UsersModel User { get; set; }
 
         [ForeignKey("ExamID")]
-        public ExamsModel Exam { get; set; }
+        public required ExamModel Exam { get; set; }
 
         [ForeignKey("QuestionID")]
-
-
+        public QuestionModel? QuestionSubmit { get; set; }
     }
 }

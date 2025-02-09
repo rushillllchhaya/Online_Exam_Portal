@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace API.Models
 {
-    public class ExamsModel
+    public class ExamModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ExamID { get; set; }
+
+        public int SubjectID { get; set; }
 
         public int Title { get; set; }
 
@@ -23,16 +25,11 @@ namespace API.Models
 
 
         //navigation
-        [ForeignKey("CreatedBy")]
-        public ProfessorModel professorexam { get; set; }
+        [ForeignKey("SubjectID")]
+        public SubjectModel? SubjectExam { get; set; }
 
-        public List<QuestionModel> questionexam { get; set; }
+        public required List<QuestionModel> questionexam { get; set; }
+
+        public required List<SubmissionModel> Submission { get; set; }
     }
-
-    // public class professorExam
-    // {
-    //     public int ProfessorID { get; set; }
-
-    //     public int ExamID { get; set; }
-    // }
 }

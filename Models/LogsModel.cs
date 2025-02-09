@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace API.Models
 {
-    public class MonitoringLogsModel
+    public class LogsModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -26,6 +26,6 @@ namespace API.Models
 
         //navigation
         [ForeignKey("UserID")]
-        public UsersModel User { get; set; }
+        public required UsersModel User { get; set; }
     }
 }
