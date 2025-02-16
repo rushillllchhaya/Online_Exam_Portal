@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -62,9 +63,10 @@ namespace API.Data
             {
                 entity.HasKey(e => e.SubjectID);
                 entity.Property(e => e.SubjectID).UseIdentityColumn();
-
-                // Define one-to-many relationship
-                entity.HasOne(e => e.SubjectProfessor).WithMany(p => p.Subjects).HasForeignKey(e => e.ProfessorID).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.SubjectProfessor)
+                      .WithMany(p => p.Subjects)
+                      .HasForeignKey(e => e.ProfessorID)
+                      .OnDelete(DeleteBehavior.Restrict);
                 entity.ToTable("Subjects");
             });
 
@@ -80,23 +82,35 @@ namespace API.Data
                 entity.ToTable("Exams");
             });
 
-            // Questions table
+            // Questions table (Fixed Naming)
             builder.Entity<QuestionModel>(entity =>
             {
                 entity.HasKey(e => e.QuestionID);
                 entity.Property(e => e.QuestionID).UseIdentityColumn();
-                entity.HasOne(e => e.Questionexam).WithMany(e => e.questionexam).HasForeignKey(e => e.ExamID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Exam)
+                      .WithMany(e => e.Questions)
+                      .HasForeignKey(e => e.ExamID)
+                      .OnDelete(DeleteBehavior.Cascade);
                 entity.ToTable("Questions");
             });
 
-            // Submissions table
+            // Submissions table (Using StudentID instead of UserID)
             builder.Entity<SubmissionModel>(entity =>
             {
                 entity.HasKey(e => e.SubmissionID);
                 entity.Property(e => e.SubmissionID).UseIdentityColumn();
-                entity.HasOne(e => e.Exam).WithMany(e => e.Submission).HasForeignKey(e => e.ExamID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserID).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.QuestionSubmit).WithMany().HasForeignKey(e => e.QuestionID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Exam)
+                      .WithMany(e => e.Submissions)
+                      .HasForeignKey(e => e.ExamID)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Student)
+                      .WithMany()
+                      .HasForeignKey(e => e.StudentID)
+                      .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.QuestionSubmit)
+                      .WithMany()
+                      .HasForeignKey(e => e.QuestionID)
+                      .OnDelete(DeleteBehavior.Cascade);
                 entity.ToTable("Submissions");
             });
 
@@ -105,9 +119,49 @@ namespace API.Data
             {
                 entity.HasKey(e => e.LogID);
                 entity.Property(e => e.LogID).UseIdentityColumn();
-                entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.User)
+                      .WithMany()
+                      .HasForeignKey(e => e.UserID)
+                      .OnDelete(DeleteBehavior.Cascade);
                 entity.ToTable("MonitoringLogs");
             });
+
+            /////////////////////////////////////////////////////////
+            // Seeding Data
+            var hasher = new PasswordHasher<UsersModel>();
+
+            builder.Entity<UsersModel>().HasData(
+                new UsersModel { UserID = 1, Name = "John Doe", Role = "Professor", Email = "johndoe@example.com", Password = hasher.HashPassword(null, "securepassword") },
+                new UsersModel { UserID = 2, Name = "Alice Smith", Role = "Student", Email = "alicesmith@example.com", Password = hasher.HashPassword(null, "securepassword") }
+            );
+
+            builder.Entity<ProfessorModel>().HasData(
+                new ProfessorModel { ProfessorID = 1, UserID = 1, Name = "John Doe", Number = 1234567890, Address = "123 University Street", Designation = "Head of Department" }
+            );
+
+            builder.Entity<StudentModel>().HasData(
+                new StudentModel { StudentID = 1, UserID = 2, EnrollmentDate = new DateTime(2025, 02, 16), Number = 9876543210, Address = "456 College Avenue", SecondaryEmail = "alice.alt@example.com" }
+            );
+
+            builder.Entity<SubjectModel>().HasData(
+                new SubjectModel { SubjectID = 1, SubjectCode = "CS101", SubjectName = "Computer Science", ProfessorID = 1 }
+            );
+
+            builder.Entity<ExamModel>().HasData(
+                new ExamModel { ExamID = 1, SubjectID = 1, Title = "Midterm Exam", Description = "Midterm covering first 5 chapters", Schedule = new DateTime(2025, 02, 23), Duration = 90, CreatedBy = 1 }
+            );
+
+            builder.Entity<QuestionModel>().HasData(
+                new QuestionModel { QuestionID = 1, ExamID = 1, QuestionText = "What is OOP?", QuestionType = "MCQ", Options = "A) Object-Oriented Programming;B) Only One Process;C) Open Online Platform;D) None", CorrectAnswer = "A" }
+            );
+
+            builder.Entity<SubmissionModel>().HasData(
+                new SubmissionModel { SubmissionID = 1, ExamID = 1, StudentID = 1, QuestionID = 1, Answer = "A" }
+            );
+
+            builder.Entity<LogsModel>().HasData(
+                new LogsModel { LogID = 1, ExamID = 1, UserID = 1, Timestamp = new DateTime(2025, 02, 16, 10, 15, 00), ActivityTime = "10:15 AM", Notes = "Exam started successfully." }
+            );
         }
     }
 }

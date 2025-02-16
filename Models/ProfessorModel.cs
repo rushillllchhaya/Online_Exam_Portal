@@ -29,7 +29,7 @@ namespace API.Models
         public List<SubjectModel>? Subjects { get; set; }
 
         [ForeignKey("UserID")]
-        public required UsersModel User { get; set; }
+        public UsersModel User { get; set; }
     }
 
 

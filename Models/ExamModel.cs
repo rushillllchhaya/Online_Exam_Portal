@@ -15,7 +15,7 @@ namespace API.Models
 
         public int SubjectID { get; set; }
 
-        public int Title { get; set; }
+        public string? Title { get; set; }
 
         public string? Description { get; set; }
 
@@ -28,8 +28,11 @@ namespace API.Models
         [ForeignKey("SubjectID")]
         public SubjectModel? SubjectExam { get; set; }
 
-        public required List<QuestionModel> questionexam { get; set; }
+        [ForeignKey("CreatedBy")]
+        public ProfessorModel? CreatedByProfessor { get; set; }
 
-        public required List<SubmissionModel> Submission { get; set; }
+        public List<QuestionModel> Questions { get; set; }
+
+        public List<SubmissionModel> Submissions { get; set; }
     }
 }

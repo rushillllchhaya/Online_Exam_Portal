@@ -15,7 +15,7 @@ namespace API.Models
 
         public int ExamID { get; set; }
 
-        public string? UserID { get; set; }
+        public int UserID { get; set; }
 
         public DateTime Timestamp { get; set; }
 
@@ -26,6 +26,6 @@ namespace API.Models
 
         //navigation
         [ForeignKey("UserID")]
-        public required UsersModel User { get; set; }
+        public UsersModel User { get; set; }
     }
 }

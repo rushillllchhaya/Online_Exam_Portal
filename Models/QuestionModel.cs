@@ -9,20 +9,15 @@ namespace API.Models
 {
     public class QuestionModel
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int QuestionID { get; set; }
         public int ExamID { get; set; }
-        public string? QuestionText { get; set; }
-        public string? QuestionType { get; set; }
-        public string? Options { get; set; }
-        public string? CorrectAnswer { get; set; }
-
-
-        //navogation
-        [ForeignKey("ExamID")]
-        public ExamModel? Questionexam { get; set; }
+        public ExamModel Exam { get; set; }
+        public string QuestionText { get; set; }
+        public string QuestionType { get; set; }
+        public string Options { get; set; }
+        public string CorrectAnswer { get; set; }
     }
+
 
     public class ExamQuestion
     {
