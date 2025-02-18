@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -7,13 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<UsersModel, IdentityRole<int>, int>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        // DbSet for all models
-        public DbSet<UsersModel> Users { get; set; }
+        // DbSet for all models (EXCLUDING UsersModel, as Identity handles it)
         public DbSet<ProfessorModel> Professors { get; set; }
         public DbSet<StudentModel> Students { get; set; }
         public DbSet<SubjectModel> Subjects { get; set; }
@@ -26,19 +23,19 @@ namespace API.Data
         {
             base.OnModelCreating(builder);
 
-            // Users table
-            builder.Entity<UsersModel>(entity =>
-            {
-                entity.HasKey(e => e.UserID);
-                entity.Property(e => e.UserID).UseIdentityColumn();
-                entity.ToTable("Users");
-            });
+            // Ensure Identity uses int-based keys and tables
+            builder.Entity<UsersModel>().ToTable("Users");
+            builder.Entity<IdentityRole<int>>().ToTable("Roles");
+
+            // Prevent duplicate identity columns
+            builder.Entity<UsersModel>()
+                .Property(u => u.Id)
+                .ValueGeneratedNever();
 
             // Professors table
             builder.Entity<ProfessorModel>(entity =>
             {
                 entity.HasKey(e => e.ProfessorID);
-                entity.Property(e => e.ProfessorID).UseIdentityColumn();
                 entity.HasOne(e => e.User)
                       .WithOne()
                       .HasForeignKey<ProfessorModel>(e => e.UserID)
@@ -50,7 +47,6 @@ namespace API.Data
             builder.Entity<StudentModel>(entity =>
             {
                 entity.HasKey(e => e.StudentID);
-                entity.Property(e => e.StudentID).UseIdentityColumn();
                 entity.HasOne(e => e.User)
                       .WithOne()
                       .HasForeignKey<StudentModel>(e => e.UserID)
@@ -62,7 +58,6 @@ namespace API.Data
             builder.Entity<SubjectModel>(entity =>
             {
                 entity.HasKey(e => e.SubjectID);
-                entity.Property(e => e.SubjectID).UseIdentityColumn();
                 entity.HasOne(e => e.SubjectProfessor)
                       .WithMany(p => p.Subjects)
                       .HasForeignKey(e => e.ProfessorID)
@@ -74,7 +69,6 @@ namespace API.Data
             builder.Entity<ExamModel>(entity =>
             {
                 entity.HasKey(e => e.ExamID);
-                entity.Property(e => e.ExamID).UseIdentityColumn();
                 entity.HasOne(e => e.SubjectExam)
                       .WithMany(s => s.Exams)
                       .HasForeignKey(e => e.SubjectID)
@@ -82,11 +76,10 @@ namespace API.Data
                 entity.ToTable("Exams");
             });
 
-            // Questions table (Fixed Naming)
+            // Questions table
             builder.Entity<QuestionModel>(entity =>
             {
                 entity.HasKey(e => e.QuestionID);
-                entity.Property(e => e.QuestionID).UseIdentityColumn();
                 entity.HasOne(e => e.Exam)
                       .WithMany(e => e.Questions)
                       .HasForeignKey(e => e.ExamID)
@@ -94,11 +87,10 @@ namespace API.Data
                 entity.ToTable("Questions");
             });
 
-            // Submissions table (Using StudentID instead of UserID)
+            // Submissions table
             builder.Entity<SubmissionModel>(entity =>
             {
                 entity.HasKey(e => e.SubmissionID);
-                entity.Property(e => e.SubmissionID).UseIdentityColumn();
                 entity.HasOne(e => e.Exam)
                       .WithMany(e => e.Submissions)
                       .HasForeignKey(e => e.ExamID)
@@ -114,11 +106,10 @@ namespace API.Data
                 entity.ToTable("Submissions");
             });
 
-            // Monitoring Logs table
+            // Logs table
             builder.Entity<LogsModel>(entity =>
             {
                 entity.HasKey(e => e.LogID);
-                entity.Property(e => e.LogID).UseIdentityColumn();
                 entity.HasOne(e => e.User)
                       .WithMany()
                       .HasForeignKey(e => e.UserID)
@@ -131,16 +122,16 @@ namespace API.Data
             var hasher = new PasswordHasher<UsersModel>();
 
             builder.Entity<UsersModel>().HasData(
-                new UsersModel { UserID = 1, Name = "John Doe", Role = "Professor", Email = "johndoe@example.com", Password = hasher.HashPassword(null, "securepassword") },
-                new UsersModel { UserID = 2, Name = "Alice Smith", Role = "Student", Email = "alicesmith@example.com", Password = hasher.HashPassword(null, "securepassword") }
+                new UsersModel { UserID = 5, Id = 5, Name = "John Doe", Role = "Professor", Email = "johndoe@example.com", Password = hasher.HashPassword(null, "securepassword") },
+                new UsersModel { UserID = 6, Id = 5, Name = "Alice Smith", Role = "Student", Email = "alicesmith@example.com", Password = hasher.HashPassword(null, "securepassword") }
             );
 
             builder.Entity<ProfessorModel>().HasData(
-                new ProfessorModel { ProfessorID = 1, UserID = 1, Name = "John Doe", Number = 1234567890, Address = "123 University Street", Designation = "Head of Department" }
+                new ProfessorModel { ProfessorID = 1, UserID = 5, Name = "John Doe", Number = 1234567890, Address = "123 University Street", Designation = "Head of Department" }
             );
 
             builder.Entity<StudentModel>().HasData(
-                new StudentModel { StudentID = 1, UserID = 2, EnrollmentDate = new DateTime(2025, 02, 16), Number = 9876543210, Address = "456 College Avenue", SecondaryEmail = "alice.alt@example.com" }
+                new StudentModel { StudentID = 1, UserID = 6, EnrollmentDate = new DateTime(2025, 02, 16), Number = 9876543210, Address = "456 College Avenue", SecondaryEmail = "alice.alt@example.com" }
             );
 
             builder.Entity<SubjectModel>().HasData(
