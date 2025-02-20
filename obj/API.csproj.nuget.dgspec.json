@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Projects\\Online_Exam_Portal\\API.csproj": {}
+    "C:\\Users\\rushi\\Exam_portal\\API\\API.csproj": {}
   },
   "projects": {
-    "D:\\Projects\\Online_Exam_Portal\\API.csproj": {
+    "C:\\Users\\rushi\\Exam_portal\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Projects\\Online_Exam_Portal\\API.csproj",
+        "projectUniqueName": "C:\\Users\\rushi\\Exam_portal\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "D:\\Projects\\Online_Exam_Portal\\API.csproj",
-        "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
-        "outputPath": "D:\\Projects\\Online_Exam_Portal\\obj\\",
+        "projectPath": "C:\\Users\\rushi\\Exam_portal\\API\\API.csproj",
+        "packagesPath": "C:\\Users\\rushi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\rushi\\Exam_portal\\API\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\rushi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -88,7 +94,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.103/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

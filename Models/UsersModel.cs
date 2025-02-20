@@ -1,28 +1,23 @@
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity;
 
 namespace API.Models
 {
     public class UsersModel : IdentityUser<int>
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UserID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Ensures it's the primary key
+        public override int Id { get; set; }
 
-        public string? Name { get; set; }
-
-        public string? Role { get; set; }
-
-        public string Password { get; set; }
-
-        // Override Id property to use UserID
-        public override int Id
+        public int UserID
         {
-            get => UserID;
-            set => UserID = value;
+            get => Id;
+            set => Id = value;
         }
+
+        public string Name { get; set; }
+        public string Role { get; set; } // "Professor" or "Student"
+        public string Password { get; set; }
     }
 }

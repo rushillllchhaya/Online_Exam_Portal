@@ -10,7 +10,6 @@ namespace API.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        // DbSet for all models (EXCLUDING UsersModel, as Identity handles it)
         public DbSet<ProfessorModel> Professors { get; set; }
         public DbSet<StudentModel> Students { get; set; }
         public DbSet<SubjectModel> Subjects { get; set; }
@@ -23,16 +22,18 @@ namespace API.Data
         {
             base.OnModelCreating(builder);
 
-            // Ensure Identity uses int-based keys and tables
-            builder.Entity<UsersModel>().ToTable("Users");
-            builder.Entity<IdentityRole<int>>().ToTable("Roles");
+            // Ensure UsersModel table uses UserID as the primary key
+            builder.Entity<UsersModel>().ToTable("Users")
+                .HasKey(u => u.UserID); // Use UserID as the primary key
 
-            // Prevent duplicate identity columns
-            builder.Entity<UsersModel>()
-                .Property(u => u.Id)
-                .ValueGeneratedNever();
+            builder.Entity<UsersModel>().Property(u => u.UserID)
+                .ValueGeneratedOnAdd(); // Only this column should be identity
 
-            // Professors table
+            builder.Entity<UsersModel>().Property(u => u.Id)
+                .HasColumnName("UserID") // Rename IdentityUser<int>'s Id to UserID
+                .ValueGeneratedNever(); // Prevent IdentityUser<int> from generating Id separately
+
+            // Professors
             builder.Entity<ProfessorModel>(entity =>
             {
                 entity.HasKey(e => e.ProfessorID);
@@ -40,10 +41,9 @@ namespace API.Data
                       .WithOne()
                       .HasForeignKey<ProfessorModel>(e => e.UserID)
                       .OnDelete(DeleteBehavior.Cascade);
-                entity.ToTable("Professors");
             });
 
-            // Students table
+            // Students
             builder.Entity<StudentModel>(entity =>
             {
                 entity.HasKey(e => e.StudentID);
@@ -51,62 +51,65 @@ namespace API.Data
                       .WithOne()
                       .HasForeignKey<StudentModel>(e => e.UserID)
                       .OnDelete(DeleteBehavior.Cascade);
-                entity.ToTable("Students");
             });
 
-            // Subjects table
+            // Subjects
             builder.Entity<SubjectModel>(entity =>
             {
                 entity.HasKey(e => e.SubjectID);
-                entity.HasOne(e => e.SubjectProfessor)
-                      .WithMany(p => p.Subjects)
+                entity.HasOne(e => e.Professor)
+                      .WithMany()
                       .HasForeignKey(e => e.ProfessorID)
-                      .OnDelete(DeleteBehavior.Restrict);
-                entity.ToTable("Subjects");
+                      .OnDelete(DeleteBehavior.Restrict); // Prevents deletion of referenced Professors
             });
 
-            // Exams table
+            // Exams
             builder.Entity<ExamModel>(entity =>
             {
                 entity.HasKey(e => e.ExamID);
-                entity.HasOne(e => e.SubjectExam)
+                entity.HasOne(e => e.Subject)
                       .WithMany(s => s.Exams)
                       .HasForeignKey(e => e.SubjectID)
                       .OnDelete(DeleteBehavior.Cascade);
-                entity.ToTable("Exams");
+
+                entity.HasOne(e => e.Professor)
+                      .WithMany()
+                      .HasForeignKey(e => e.CreatedBy)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Questions table
+            // Questions
             builder.Entity<QuestionModel>(entity =>
             {
                 entity.HasKey(e => e.QuestionID);
                 entity.HasOne(e => e.Exam)
                       .WithMany(e => e.Questions)
                       .HasForeignKey(e => e.ExamID)
-                      .OnDelete(DeleteBehavior.Cascade);
-                entity.ToTable("Questions");
+                      .OnDelete(DeleteBehavior.Restrict); //  Prevents Question deletion if submissions exist
+
             });
 
-            // Submissions table
+            // Submissions (Fixing Cascade Issues)
             builder.Entity<SubmissionModel>(entity =>
             {
                 entity.HasKey(e => e.SubmissionID);
                 entity.HasOne(e => e.Exam)
                       .WithMany(e => e.Submissions)
                       .HasForeignKey(e => e.ExamID)
-                      .OnDelete(DeleteBehavior.Cascade);
+                      .OnDelete(DeleteBehavior.Restrict);
+
                 entity.HasOne(e => e.Student)
                       .WithMany()
                       .HasForeignKey(e => e.StudentID)
                       .OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.QuestionSubmit)
+
+                entity.HasOne(e => e.Question)
                       .WithMany()
                       .HasForeignKey(e => e.QuestionID)
-                      .OnDelete(DeleteBehavior.Cascade);
-                entity.ToTable("Submissions");
+                      .OnDelete(DeleteBehavior.SetNull); // Make sure QuestionID is nullable
             });
 
-            // Logs table
+            // Logs
             builder.Entity<LogsModel>(entity =>
             {
                 entity.HasKey(e => e.LogID);
@@ -114,45 +117,7 @@ namespace API.Data
                       .WithMany()
                       .HasForeignKey(e => e.UserID)
                       .OnDelete(DeleteBehavior.Cascade);
-                entity.ToTable("MonitoringLogs");
             });
-
-            /////////////////////////////////////////////////////////
-            // Seeding Data
-            var hasher = new PasswordHasher<UsersModel>();
-
-            builder.Entity<UsersModel>().HasData(
-                new UsersModel { UserID = 5, Id = 5, Name = "John Doe", Role = "Professor", Email = "johndoe@example.com", Password = hasher.HashPassword(null, "securepassword") },
-                new UsersModel { UserID = 6, Id = 5, Name = "Alice Smith", Role = "Student", Email = "alicesmith@example.com", Password = hasher.HashPassword(null, "securepassword") }
-            );
-
-            builder.Entity<ProfessorModel>().HasData(
-                new ProfessorModel { ProfessorID = 1, UserID = 5, Name = "John Doe", Number = 1234567890, Address = "123 University Street", Designation = "Head of Department" }
-            );
-
-            builder.Entity<StudentModel>().HasData(
-                new StudentModel { StudentID = 1, UserID = 6, EnrollmentDate = new DateTime(2025, 02, 16), Number = 9876543210, Address = "456 College Avenue", SecondaryEmail = "alice.alt@example.com" }
-            );
-
-            builder.Entity<SubjectModel>().HasData(
-                new SubjectModel { SubjectID = 1, SubjectCode = "CS101", SubjectName = "Computer Science", ProfessorID = 1 }
-            );
-
-            builder.Entity<ExamModel>().HasData(
-                new ExamModel { ExamID = 1, SubjectID = 1, Title = "Midterm Exam", Description = "Midterm covering first 5 chapters", Schedule = new DateTime(2025, 02, 23), Duration = 90, CreatedBy = 1 }
-            );
-
-            builder.Entity<QuestionModel>().HasData(
-                new QuestionModel { QuestionID = 1, ExamID = 1, QuestionText = "What is OOP?", QuestionType = "MCQ", Options = "A) Object-Oriented Programming;B) Only One Process;C) Open Online Platform;D) None", CorrectAnswer = "A" }
-            );
-
-            builder.Entity<SubmissionModel>().HasData(
-                new SubmissionModel { SubmissionID = 1, ExamID = 1, StudentID = 1, QuestionID = 1, Answer = "A" }
-            );
-
-            builder.Entity<LogsModel>().HasData(
-                new LogsModel { LogID = 1, ExamID = 1, UserID = 1, Timestamp = new DateTime(2025, 02, 16, 10, 15, 00), ActivityTime = "10:15 AM", Notes = "Exam started successfully." }
-            );
         }
     }
 }

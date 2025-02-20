@@ -10,7 +10,8 @@ builder.Services.AddControllersWithViews();
 
 // Register the database context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
+
 
 // Register Identity Services
 builder.Services.AddIdentity<UsersModel, IdentityRole<int>>()

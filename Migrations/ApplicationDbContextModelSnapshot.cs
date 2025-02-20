@@ -46,6 +46,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ExamID");
@@ -54,19 +55,7 @@ namespace API.Migrations
 
                     b.HasIndex("SubjectID");
 
-                    b.ToTable("Exams", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            ExamID = 1,
-                            CreatedBy = 1,
-                            Description = "Midterm covering first 5 chapters",
-                            Duration = 90,
-                            Schedule = new DateTime(2025, 2, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            SubjectID = 1,
-                            Title = "Midterm Exam"
-                        });
+                    b.ToTable("Exams");
                 });
 
             modelBuilder.Entity("API.Models.LogsModel", b =>
@@ -78,12 +67,11 @@ namespace API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogID"));
 
                     b.Property<string>("ActivityTime")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ExamID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Timestamp")
@@ -96,18 +84,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("MonitoringLogs", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            LogID = 1,
-                            ActivityTime = "10:15 AM",
-                            ExamID = 1,
-                            Notes = "Exam started successfully.",
-                            Timestamp = new DateTime(2025, 2, 16, 10, 15, 0, 0, DateTimeKind.Unspecified),
-                            UserID = 1
-                        });
+                    b.ToTable("Logs");
                 });
 
             modelBuilder.Entity("API.Models.ProfessorModel", b =>
@@ -118,17 +95,8 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProfessorID"));
 
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Designation")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Number")
-                        .HasColumnType("int");
 
                     b.Property<int>("UserID")
                         .HasColumnType("int");
@@ -138,18 +106,7 @@ namespace API.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Professors", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            ProfessorID = 1,
-                            Address = "123 University Street",
-                            Designation = "Head of Department",
-                            Name = "John Doe",
-                            Number = 1234567890,
-                            UserID = 1
-                        });
+                    b.ToTable("Professors");
                 });
 
             modelBuilder.Entity("API.Models.QuestionModel", b =>
@@ -183,18 +140,7 @@ namespace API.Migrations
 
                     b.HasIndex("ExamID");
 
-                    b.ToTable("Questions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            QuestionID = 1,
-                            CorrectAnswer = "A",
-                            ExamID = 1,
-                            Options = "A) Object-Oriented Programming;B) Only One Process;C) Open Online Platform;D) None",
-                            QuestionText = "What is OOP?",
-                            QuestionType = "MCQ"
-                        });
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("API.Models.StudentModel", b =>
@@ -205,17 +151,8 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentID"));
 
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EnrollmentDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<long>("Number")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("SecondaryEmail")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserID")
                         .HasColumnType("int");
@@ -225,18 +162,7 @@ namespace API.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Students", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            StudentID = 1,
-                            Address = "456 College Avenue",
-                            EnrollmentDate = new DateTime(2025, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Number = 9876543210L,
-                            SecondaryEmail = "alice.alt@example.com",
-                            UserID = 2
-                        });
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("API.Models.SubjectModel", b =>
@@ -250,31 +176,19 @@ namespace API.Migrations
                     b.Property<int>("ProfessorID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StudentModelStudentID")
-                        .HasColumnType("int");
-
                     b.Property<string>("SubjectCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubjectName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SubjectID");
 
                     b.HasIndex("ProfessorID");
 
-                    b.HasIndex("StudentModelStudentID");
-
-                    b.ToTable("Subjects", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            SubjectID = 1,
-                            ProfessorID = 1,
-                            SubjectCode = "CS101",
-                            SubjectName = "Computer Science"
-                        });
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("API.Models.SubmissionModel", b =>
@@ -292,7 +206,7 @@ namespace API.Migrations
                     b.Property<int>("ExamID")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuestionID")
+                    b.Property<int?>("QuestionID")
                         .HasColumnType("int");
 
                     b.Property<int>("StudentID")
@@ -306,17 +220,7 @@ namespace API.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Submissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            SubmissionID = 1,
-                            Answer = "A",
-                            ExamID = 1,
-                            QuestionID = 1,
-                            StudentID = 1
-                        });
+                    b.ToTable("Submissions");
                 });
 
             modelBuilder.Entity("API.Models.UsersModel", b =>
@@ -342,7 +246,8 @@ namespace API.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("UserID");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -351,6 +256,7 @@ namespace API.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
@@ -362,6 +268,7 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
@@ -374,6 +281,7 @@ namespace API.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Role")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
@@ -396,38 +304,10 @@ namespace API.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Users", (string)null);
-
-                    b.HasData(
-                        new
+                    b.ToTable("Users", null, t =>
                         {
-                            UserID = 1,
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "0e7fb151-f89f-400c-a511-ac0131784e3f",
-                            Email = "johndoe@example.com",
-                            EmailConfirmed = false,
-                            Id = 0,
-                            LockoutEnabled = false,
-                            Name = "John Doe",
-                            Password = "AQAAAAIAAYagAAAAEHoDNiEciaItuD8oZ950QRZLCNxf1K+fQbP5O4SOsC9jXtMKwVCxFrrTqZp//jH2LQ==",
-                            PhoneNumberConfirmed = false,
-                            Role = "Professor",
-                            TwoFactorEnabled = false
-                        },
-                        new
-                        {
-                            UserID = 2,
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "8821cf9d-3232-477d-8108-b890fb2773c9",
-                            Email = "alicesmith@example.com",
-                            EmailConfirmed = false,
-                            Id = 0,
-                            LockoutEnabled = false,
-                            Name = "Alice Smith",
-                            Password = "AQAAAAIAAYagAAAAEH5Ccv0sOsbeRcjXbgmUFT9lRTFmfK9qKXq8RscNJLeP0IZ+YoBrgB763DGy85K3hg==",
-                            PhoneNumberConfirmed = false,
-                            Role = "Student",
-                            TwoFactorEnabled = false
+                            t.Property("UserID")
+                                .HasColumnName("UserID1");
                         });
                 });
 
@@ -566,21 +446,21 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.ExamModel", b =>
                 {
-                    b.HasOne("API.Models.ProfessorModel", "CreatedByProfessor")
+                    b.HasOne("API.Models.ProfessorModel", "Professor")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("API.Models.SubjectModel", "SubjectExam")
+                    b.HasOne("API.Models.SubjectModel", "Subject")
                         .WithMany("Exams")
                         .HasForeignKey("SubjectID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedByProfessor");
+                    b.Navigation("Professor");
 
-                    b.Navigation("SubjectExam");
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("API.Models.LogsModel", b =>
@@ -610,7 +490,7 @@ namespace API.Migrations
                     b.HasOne("API.Models.ExamModel", "Exam")
                         .WithMany("Questions")
                         .HasForeignKey("ExamID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Exam");
@@ -629,17 +509,13 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.SubjectModel", b =>
                 {
-                    b.HasOne("API.Models.ProfessorModel", "SubjectProfessor")
-                        .WithMany("Subjects")
+                    b.HasOne("API.Models.ProfessorModel", "Professor")
+                        .WithMany()
                         .HasForeignKey("ProfessorID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("API.Models.StudentModel", null)
-                        .WithMany("Studentsubject")
-                        .HasForeignKey("StudentModelStudentID");
-
-                    b.Navigation("SubjectProfessor");
+                    b.Navigation("Professor");
                 });
 
             modelBuilder.Entity("API.Models.SubmissionModel", b =>
@@ -647,14 +523,13 @@ namespace API.Migrations
                     b.HasOne("API.Models.ExamModel", "Exam")
                         .WithMany("Submissions")
                         .HasForeignKey("ExamID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("API.Models.QuestionModel", "QuestionSubmit")
+                    b.HasOne("API.Models.QuestionModel", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("API.Models.StudentModel", "Student")
                         .WithMany()
@@ -664,7 +539,7 @@ namespace API.Migrations
 
                     b.Navigation("Exam");
 
-                    b.Navigation("QuestionSubmit");
+                    b.Navigation("Question");
 
                     b.Navigation("Student");
                 });
@@ -725,16 +600,6 @@ namespace API.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Submissions");
-                });
-
-            modelBuilder.Entity("API.Models.ProfessorModel", b =>
-                {
-                    b.Navigation("Subjects");
-                });
-
-            modelBuilder.Entity("API.Models.StudentModel", b =>
-                {
-                    b.Navigation("Studentsubject");
                 });
 
             modelBuilder.Entity("API.Models.SubjectModel", b =>

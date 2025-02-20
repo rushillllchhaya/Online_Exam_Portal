@@ -10,28 +10,14 @@ namespace API.Models
     public class SubjectModel
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SubjectID { get; set; }
 
-        public string? SubjectCode { get; set; }
+        public string SubjectCode { get; set; }
+        public string SubjectName { get; set; }
 
-        public string? SubjectName { get; set; }
-
-        public int ProfessorID { get; set; }
-
-
-        //navigation
-        [ForeignKey("ProfessorID")]
-        public ProfessorModel? SubjectProfessor { get; set; }
-
+        [ForeignKey("Professor")]
+        public int ProfessorID { get; set; }  // FK to Professor
+        public ProfessorModel? Professor { get; set; }
         public List<ExamModel>? Exams { get; set; }
-    }
-
-
-    public class Subjectprofessor
-    {
-        public int ProfessorID { get; set; }
-
-        public int SubjectID { get; set; }
     }
 }

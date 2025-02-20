@@ -9,19 +9,17 @@ namespace API.Models
 {
     public class QuestionModel
     {
+        [Key]
         public int QuestionID { get; set; }
-        public int ExamID { get; set; }
-        public ExamModel Exam { get; set; }
+
         public string QuestionText { get; set; }
-        public string QuestionType { get; set; }
-        public string Options { get; set; }
+        public string QuestionType { get; set; }  // MCQ, Short Answer, etc.
+        public string Options { get; set; }  // Comma-separated options for MCQs
         public string CorrectAnswer { get; set; }
+
+        [ForeignKey("Exam")]
+        public int ExamID { get; set; }  // FK to Exam
+        public ExamModel Exam { get; set; }
     }
 
-
-    public class ExamQuestion
-    {
-        public int ExamID { get; set; }
-        public int QuestionID { get; set; }
-    }
 }

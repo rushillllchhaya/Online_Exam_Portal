@@ -9,14 +9,23 @@ namespace API.Models
 {
     public class SubmissionModel
     {
+        [Key]
         public int SubmissionID { get; set; }
-        public int ExamID { get; set; }
+
+        [ForeignKey("Exam")]
+        public int ExamID { get; set; }  // FK to Exam
         public ExamModel Exam { get; set; }
-        public int StudentID { get; set; }
+
+        [ForeignKey("Student")]
+        public int StudentID { get; set; }  // FK to Student
         public StudentModel Student { get; set; }
-        public int QuestionID { get; set; }
-        public QuestionModel QuestionSubmit { get; set; }
+
+        [ForeignKey("Question")]
+        public int? QuestionID { get; set; }  // FK to Question (nullable to prevent cycle issues)
+        public QuestionModel? Question { get; set; }
+
         public string Answer { get; set; }
     }
+
 
 }

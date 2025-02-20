@@ -10,19 +10,11 @@ namespace API.Models
     public class StudentModel
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int StudentID { get; set; }
-        public int UserID { get; set; }
-        public DateTime EnrollmentDate { get; set; }
-        public long Number { get; set; }
-        public string? Address { get; set; }
-        public string? SecondaryEmail { get; set; }
 
-
-        //navigation
-        [ForeignKey("UserID")]
+        [ForeignKey("User")]
+        public int UserID { get; set; }  // FK to UsersModel
         public UsersModel User { get; set; }
-        public List<SubjectModel>? Studentsubject { get; set; }
+        public DateTime EnrollmentDate { get; set; }
     }
-
 }
